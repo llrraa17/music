@@ -3,272 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Favorite Song</title>
+    <title>My Favorite Song & Love Notes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+    <style>
+        /* Your existing CSS styles for the heart animation and playlist */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #8c1515, #0e0313);
-        font-family: 'Cormorant Garamond', serif;
-        color: #100404;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-    }
+        body {
+            min-height: 100vh;
+            font-family: 'Cormorant Garamond', serif;
+            color: #100404;
+            overflow: auto; /* Allow scrolling */
+        }
 
-    .container {
-        width: 100%;
-        max-width: 1200px;
-        background: rgb(234, 109, 203);
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        animation: fadeIn 1.5s ease-out;
-    }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
 
-    .content {
-        display: flex;
-        flex-direction: row;
-        gap: 2rem;
-        padding: 2rem;
-        align-items: stretch;
-    }
+        .container {
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+            animation-delay: 2s;
+        }
 
-    @media (max-width: 768px) {
         .content {
+            display: flex;
+            flex-direction:row;
+            gap: 2rem;
+            padding: 2rem;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .image-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
             flex-direction: column;
+            gap: 1rem;
         }
-    }
+        
 
-    .image-section {
-        flex: 1;
-        min-width: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+        .image-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
 
-    .image-container {
-        position: relative;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-        height: 100%;
-    }
+        .image-container:hover {
+            transform: translateY(-5px);
+        }
 
-    .image-container:hover {
-        transform: translateY(-5px);
-    }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
 
-    .image-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.5s ease;
-    }
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
 
-    .image-container:hover img {
-        transform: scale(1.05);
-    }
+        .quote {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
 
-    .quote {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        padding: 2rem;
-        color: white;
-        text-align: center;
-    }
+        .quote p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideUp 1s ease-out;
+        }
 
-    .quote p {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.5rem;
-        font-style: italic;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        animation: slideUp 1s ease-out;
-    }
+        .button-container {
+            display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+        }
 
-    .button-container {
-        text-align: center;
-        margin-top: 1rem;
-    }
+       
 
-    .button-container button {
-        font-size: 1.2rem;
-        padding: 15px 30px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        width: 200px;
-        background-color: hsl(210, 100%, 100%);
-        color: rgb(0, 0, 0);
-        transition: background-color 0.3s ease;
-    }
+        .playlist-section {
+            flex: 2;
+            min-width:300px;
+           
+        }
 
-    .button-container button:hover {
-        background-color: #360303;
-    }
+        .playlist-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #241fade2;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #ffd6e0;
+            padding-bottom: 0.5rem;
+        }
 
-    .playlist-section {
-        flex: 1;
-        min-width: 300px;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-    }
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
 
-    .playlist-section h2 {
-        font-family: 'Playfair Display', serif;
-        font-size: 2rem;
-        color: #2c2c2c;
-        margin-bottom: 1.5rem;
-        text-align: center;
-        border-bottom: 2px solid #ffd6e0;
-        padding-bottom: 0.5rem;
-    }
+        .song {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgb(2, 18, 161);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
 
-    .playlist {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        flex: 1;
-    }
+        .song.playing {
+            background: linear-gradient(to right, #fff5f7, #ffe6e6);
+            transform: translateX(10px);
+        }
 
-    .song {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
+        .song:hover {
+            transform: translateX(10px);
+            background: linear-gradient(to right, white, #fff5f7);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
 
-    .song.playing {
-        background: linear-gradient(to right, #fff5f7, #ffe6e6);
-        transform: translateX(10px);
-    }
+        .song-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: #ff9eb5;
+            width: 40px;
+        }
 
-    .song:hover {
-        transform: translateX(10px);
-        background: linear-gradient(to right, white, #fff5f7);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    }
+        .song-details {
+            flex: 1;
+            margin-left: 1rem;
+        }
 
-    .song-number {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.2rem;
-        color: #ff9eb5;
-        width: 40px;
-    }
+        .song-details h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #2c2c2c;
+            margin-bottom: 0.2rem;
+        }
 
-    .song-details {
-        flex: 1;
-        margin-left: 1rem;
-    }
+        .song-details p {
+            font-size: 0.9rem;
+            color: #666;
+        }
 
-    .song-details h3 {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.1rem;
-        color: #2c2c2c;
-        margin-bottom: 0.2rem;
-    }
+        .song-duration {
+            color: #999;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-    .song-details p {
-        font-size: 0.9rem;
-        color: #666;
-    }
+        .play-pause-btn {
+            background: none;
+            border: none;
+            color: #ff9eb5;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            transition: transform 0.2s ease;
+        }
 
-    .song-duration {
-        color: #999;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
+        .play-pause-btn:hover {
+            transform: scale(1.1);
+        }
 
-    .play-pause-btn {
-        background: none;
-        border: none;
-        color: #ff9eb5;
-        cursor: pointer;
-        font-size: 1.2rem;
-        padding: 5px;
-        transition: transform 0.2s ease;
-    }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff9eb5;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            transition: transform 0.2s ease;
+        }
 
-    .play-pause-btn:hover {
-        transform: scale(1.1);
-    }
+        .delete-btn:hover {
+            transform: scale(1.1);
+        }
 
-    @keyframes fadeIn {
-        from {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Love Notes CSS */
+        .love-notes-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
             opacity: 0;
-            transform: translateY(20px);
+            animation: fadeIn 2s ease-in-out forwards;
+            animation-delay: 2s; /* Delay of 2 seconds */
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        .header h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #271ecdec;
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
         }
-    }
 
-    .audio-container {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        text-align: center;
-    
-    }
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
 
-    body {
-    background-image: url('1.jpg'); /* Path to your image */
-    background-size: cover; /* Scales the image to cover the entire background */
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents repeating */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            background: #f3e5f5;
+            color: #d81b60;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #d81b60;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 2px solid #d81b60;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            resize: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #d81b60;
+            border-radius: 1rem;
+        }
+
+        button {
+            background: #d81b60;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .note {
+            background: #f3e5f5;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        .note-timestamp {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-content {
+            white-space: pre-wrap;
+            color: #333;
+        }
+
+        .error {
+            text-align: center;
+            margin-top: 1rem;
+            color: #d81b60;
+        }
+        .love-notes-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center the Love Notes section */
+    padding: 0 2rem 2rem; /* Add some vertical spacing */
+}
+
+.love-notes-section {
+    max-width: 700px; /* Adjust the width as needed */
+    width: 100%;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeIn 2s ease-in-out forwards;
+    animation-delay: 2s;
+}
+.change-image-btn {
+    font-size: 1.2rem;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 200px;
+    background-color: hsl(210, 100%, 100%);
+    color: rgb(0, 0, 0);
+    transition: background-color 0.3s ease;
+    margin-top: 1rem; /* Add some space between buttons */
+}
+
+.change-image-btn:hover {
+    background-color: #360303;
+    color: white;
+}
+
+.button-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: center;
 }
 
 
-    .audio-container {
-        display: none; /* Hide the audio controls */
-    }
-</style>
-<body>
-    <div class="audio-container"> 
-        <audio id="background-audio" loop muted>
-            <source src="Chase Atlantic - Friends (Lyrics) (320).mp3" type="audio/mp3">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
+/* Compact glow buttons */
+.glow-btn {
+    --glow-color: rgb(176, 181, 255);
+    --glow-spread-color: rgba(123, 149, 255, 0.781);
+    --enhanced-glow-color: rgb(206, 214, 255);
+    --btn-color: rgb(61, 69, 136);
+    
+    border: 0.15em solid var(--glow-color);
+    padding: 0.4em 1em;
+    font-size: 13px;
+    color: var(--glow-color);
+    background-color: var(--btn-color);
+    border-radius: 0.8em;
+    outline: none;
+    box-shadow: 0 0 0.5em 0.1em var(--glow-color),
+               0 0 1.5em 0.3em var(--glow-spread-color),
+               inset 0 0 0.3em 0.1em var(--glow-color);
+    text-shadow: 0 0 0.3em var(--glow-color);
+    position: relative;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.glow-btn i {
+    margin-right: 5px;
+    font-size: 12px;
+}
 
+.glow-btn::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 110%;
+    left: 0;
+    height: 80%;
+    width: 100%;
+    background-color: var(--glow-spread-color);
+    filter: blur(1em);
+    opacity: 0.6;
+    transform: perspective(1em) rotateX(35deg) scale(1, 0.5);
+}
+
+.glow-btn:hover {
+    color: var(--btn-color);
+    background-color: var(--glow-color);
+    box-shadow: 0 0 0.6em 0.1em var(--glow-color),
+               0 0 2em 0.4em var(--glow-spread-color),
+               inset 0 0 0.4em 0.1em var(--glow-color);
+}
+.glow-btn:active {
+    box-shadow: 0 0 0.3em 0.1em var(--glow-color),
+               0 0 1em 0.3em var(--glow-spread-color),
+               inset 0 0 0.3em 0.1em var(--glow-color);
+}
+.delete-button {
+    background: none;
+    border: none;
+    color: #d81b60;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: transform 0.2s ease;
+    margin-left: auto; /* Push to the right */
+    display: block; /* Make it appear below the content */
+    margin-top: 0.5rem;
+}
+
+.delete-button:hover {
+    transform: scale(1.1);
+    color: #ff5252;
+}
+
+.note {
+    background: #f3e5f5;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    position: relative; /* For absolute positioning if needed */
+}
+
+.note-content {
+    white-space: pre-wrap;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.notes-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding-right: 5px; /* Prevent scrollbar from covering content */
+}
+    </style>
+</head>
+<body>
+    <canvas id="heart"></canvas>
+
+   
     <div class="container">
+        
         <div class="content">
             <div class="image-section">
                 <div class="image-container">
@@ -278,156 +512,527 @@
                     </div>
                 </div>
                 <div class="button-container">
-                    <button id="yes">i can be the melody so be my words</button>
+                    <button id="addSongBtn" class="glow-btn">
+                        <i class="fas fa-plus"></i> Add New Song
+                    </button>
+                    <input type="file" id="fileInput" accept="audio/*" class="hidden">
                 </div>
+                <button id="changeImageBtn" class="glow-btn">
+                    <i class="fas fa-image"></i> Change Image
+                </button>
+                <input type="file" id="imageInput" accept="image/*" class="hidden">
             </div>
             
+
             <div class="playlist-section">
                 <h2>Our Playlist</h2>
-                <div class="playlist">
-                    <div class="song" data-audio-src="Lady Gaga, Bruno Mars - Die With A Smile (Lyrics) (320).mp3">
-                        <div class="song-number">01</div>
-                        <div class="song-details">
-                            <h3>Die With A Smile </h3>
-                            <p>Lady Gaga, Bruno Mars </p>
-                        </div>
-                        <div class="song-duration">
-                            <span>4:09</span>
-                            <button class="play-pause-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div class="playlist" id="playlist">
+                    <!-- Songs will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+            <div class="love-notes-wrapper">
+                <div class="love-notes-section">
+                    <!-- Love Notes content here -->
+    <div class="love-notes-section">
+        <div class="header">
+            <h1>❤️ Love Notes ❤️</h1>
+            <p>Write your heart out...</p>
+        </div>
+                
 
-                    <div class="song" data-audio-src="Lauv - I Like Me Better (Lyrics) (320).mp3">
-                        <div class="song-number">02</div>
-                        <div class="song-details">
-                            <h3>I Like Me Better </h3>
-                            <p>Lauv</p>
-                        </div>
-                        <div class="song-duration">
-                            <span>3:17</span>
-                            <button class="play-pause-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
 
-                    <div class="song" data-audio-src="Sam Smith - I'm Not The Only One (Lyrics) (320).mp3">
-                        <div class="song-number">03</div>
-                        <div class="song-details">
-                            <h3>I'm Not The Only One</h3>
-                            <p>Sam Smith</p>
-                        </div>
-                        <div class="song-duration">
-                            <span>3:57</span>
-                            <button class="play-pause-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="write">✏️ Write Note</button>
+                        <button class="tab-button" data-tab="read">📖 Read Note</button>
+            </div>
 
-                    <div class="song" data-audio-src="Troye Sivan - Angel Baby (Lyrics) (320).mp3">
-                        <div class="song-number">04</div>
-                        <div class="song-details">
-                            <h3> Angel Baby</h3>
-                            <p>Troye Sivan</p>
-                        </div>
-                        <div class="song-duration">
-                            <span>3:41</span>
-                            <button class="play-pause-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="song" data-audio-src="My Only One No Hay Nadie Más copy.mp3">
-                        <div class="song-number">05</div>
-                        <div class="song-details">
-                            <h3>My Only One </h3>
-                            <p>No Hay Nadie Más </p>
-                        </div>
-                        <div class="song-duration">
-                            <span>3:18</span>
-                            <button class="play-pause-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
+            <div class="tab-content active" id="write">
+                <textarea id="noteContent" placeholder="Write your love note here..."></textarea>
+                <div class="input-group">
+                    <input type="password" id="writePasscode" placeholder="Set a secret passcode">
+                            <button onclick="saveNote()">🔒 Save Note</button>
                 </div>
             </div>
 
-            <audio id="audio-player" controls style="display:none;"></audio>
+            <div class="tab-content" id="read">
+                <div class="input-group">
+                    <input type="password" id="readPasscode" placeholder="Enter your passcode">
+                            <button onclick="retrieveNotes()">🔓 Read Note</button>
+                </div>
+                        <div id="noteDisplay" class="notes-container"></div>
+            </div>
+
+            <div id="error" class="error"></div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+</div>
+    <!-- Audio elements -->
+    <audio id="audio-player" controls style="display:none;"></audio>
+    <audio id="background-audio" loop>
+        <source src="background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
+    <!-- Heart animation script -->
     <script>
-       document.addEventListener('DOMContentLoaded', () => {
-            const songs = document.querySelectorAll('.song');
-            const audioPlayer = document.getElementById('audio-player');
-            const backgroundAudio = document.getElementById('background-audio'); // Background music
-            let currentlyPlaying = null;
+        // Your existing heart animation script
+        // ... (keep your existing script) ...
+        window.requestAnimationFrame =
+            window.__requestAnimationFrame ||
+            window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            (function () {
+                return function (callback, element) {
+                    var lastTime = element.__lastTime;
+                    if (lastTime === undefined) {
+                        lastTime = 0;
+                    }
+                    var currTime = Date.now();
+                    var timeToCall = Math.max(1, 33 - (currTime - lastTime));
+                    window.setTimeout(callback, timeToCall);
+                    element.__lastTime = currTime + timeToCall;
+                };
+            })();
+        window.isDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(((navigator.userAgent || navigator.vendor || window.opera)).toLowerCase()));
+        var loaded = false;
+        var init = function () {
+            if (loaded) return;
+            loaded = true;
+            var mobile = window.isDevice;
+            var koef = mobile ? 0.5 : 1;
+            var canvas = document.getElementById('heart');
+            var ctx = canvas.getContext('2d');
+            var width = canvas.width = koef * innerWidth;
+            var height = canvas.height = koef * innerHeight;
+            var rand = Math.random;
+            ctx.fillStyle = "rgba(0,0,0,1)";
+            ctx.fillRect(0, 0, width, height);
 
-            // Start background music automatically when the page is loaded
+            var heartPosition = function (rad) {
+                return [Math.pow(Math.sin(rad), 3), -(15 * Math.cos(rad) - 5 * Math.cos(2 * rad) - 2 * Math.cos(3 * rad) - Math.cos(4 * rad))];
+            };
+            var scaleAndTranslate = function (pos, sx, sy, dx, dy) {
+                return [dx + pos[0] * sx, dy + pos[1] * sy];
+            };
+
+            window.addEventListener('resize', function () {
+                width = canvas.width = koef * innerWidth;
+                height = canvas.height = koef * innerHeight;
+                ctx.fillStyle = "rgba(0,0,0,1)";
+                ctx.fillRect(0, 0, width, height);
+            });
+
+            var traceCount = mobile ? 20 : 50;
+            var pointsOrigin = [];
+            var i;
+            var dr = mobile ? 0.3 : 0.1;
+            for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 210, 13, 0, 0));
+            for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 150, 9, 0, 0));
+            for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 90, 5, 0, 0));
+            var heartPointsCount = pointsOrigin.length;
+
+            var targetPoints = [];
+            var pulse = function (kx, ky) {
+                for (i = 0; i < pointsOrigin.length; i++) {
+                    targetPoints[i] = [];
+                    targetPoints[i][0] = kx * pointsOrigin[i][0] + width / 2;
+                    targetPoints[i][1] = ky * pointsOrigin[i][1] + height / 2;
+                }
+            };
+
+            var e = [];
+            for (i = 0; i < heartPointsCount; i++) {
+                var x = rand() * width;
+                var y = rand() * height;
+                e[i] = {
+                    vx: 0,
+                    vy: 0,
+                    R: 2,
+                    speed: rand() + 5,
+                    q: ~~(rand() * heartPointsCount),
+                    D: 2 * (i % 2) - 1,
+                    force: 0.2 * rand() + 0.7,
+                    f: "hsla(220, 100%, 40%, .3)", // Dark blue color
+                    trace: []
+                };
+                for (var k = 0; k < traceCount; k++) e[i].trace[k] = {x: x, y: y};
+            }
+
+            var config = {
+                traceK: 0.4,
+                timeDelta: 0.01
+            };
+
+            var time = 0;
+            var loop = function () {
+                var n = -Math.cos(time);
+                pulse((1 + n) * .5, (1 + n) * .5);
+                time += ((Math.sin(time)) < 0 ? 9 : (n > 0.8) ? .2 : 1) * config.timeDelta;
+                ctx.fillStyle = "rgba(0,0,0,.1)";
+                ctx.fillRect(0, 0, width, height);
+                for (i = e.length; i--;) {
+                    var u = e[i];
+                    var q = targetPoints[u.q];
+                    var dx = u.trace[0].x - q[0];
+                    var dy = u.trace[0].y - q[1];
+                    var length = Math.sqrt(dx * dx + dy * dy);
+                    if (10 > length) {
+                        if (0.95 < rand()) {
+                            u.q = ~~(rand() * heartPointsCount);
+                        }
+                        else {
+                            if (0.99 < rand()) {
+                                u.D *= -1;
+                            }
+                            u.q += u.D;
+                            u.q %= heartPointsCount;
+                            if (0 > u.q) {
+                                u.q += heartPointsCount;
+                            }
+                        }
+                    }
+                    u.vx += -dx / length * u.speed;
+                    u.vy += -dy / length * u.speed;
+                    u.trace[0].x += u.vx;
+                    u.trace[0].y += u.vy;
+                    u.vx *= u.force;
+                    u.vy *= u.force;
+                    for (k = 0; k < u.trace.length - 1;) {
+                        var T = u.trace[k];
+                        var N = u.trace[++k];
+                        N.x -= config.traceK * (N.x - T.x);
+                        N.y -= config.traceK * (N.y - T.y);
+                    }
+                    ctx.fillStyle = u.f;
+                    for (k = 0; k < u.trace.length; k++) {
+                        ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
+                    }
+                }
+                window.requestAnimationFrame(loop, canvas);
+            };
+            loop();
+        };
+
+        var s = document.readyState;
+        if (s === 'complete' || s === 'loaded' || s === 'interactive') init();
+        else document.addEventListener('DOMContentLoaded', init, false);
+    </script>
+
+
+    <!-- Music player script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const playlist = document.getElementById('playlist');
+            const audioPlayer = document.getElementById('audio-player');
+            const backgroundAudio = document.getElementById('background-audio');
+            const fileInput = document.getElementById('fileInput');
+            const addSongBtn = document.getElementById('addSongBtn');
+
+            // Load songs from localStorage or use default songs
+            let songs = JSON.parse(localStorage.getItem('songs')) || [
+                {
+                    id: 1,
+                    title: "Die With A Smile",
+                    artist: "Lady Gaga, Bruno Mars",
+                    duration: "4:09",
+                    audioSrc: "Lady Gaga, Bruno Mars - Die With A Smile (Lyrics) (320).mp3"
+                },
+                {
+                    id: 2,
+                    title: "I Like Me Better",
+                    artist: "Lauv",
+                    duration: "3:17",
+                    audioSrc: "Lauv - I Like Me Better (Lyrics) (320).mp3"
+                },
+                {
+                    id: 3,
+                    title: "I'm Not The Only One",
+                    artist: "Sam Smith",
+                    duration: "3:57",
+                    audioSrc: "Sam Smith - I'm Not The Only One (Lyrics) (320).mp3"
+                },
+                {
+                    id: 4,
+                    title: "Angel Baby",
+                    artist: "Troye Sivan",
+                    duration: "3:41",
+                    audioSrc: "Troye Sivan - Angel Baby (Lyrics) (320).mp3"
+                },
+                {
+                    id: 5,
+                    title: "My Only One",
+                    artist: "No Hay Nadie Más",
+                    duration: "3:18",
+                    audioSrc: "My Only One No Hay Nadie Más copy.mp3"
+                }
+            ];
+
+            let currentlyPlaying = null;
+            let isPlaying = false;
+
+            // Start background music automatically
             backgroundAudio.play();
-            backgroundAudio.muted = false; // Unmute the audio
+            backgroundAudio.muted = false;
+
+            function saveSongs() {
+                localStorage.setItem('songs', JSON.stringify(songs));
+            }
+
+            function createSongElement(song) {
+                const div = document.createElement('div');
+                div.className = 'song';
+                div.dataset.id = song.id;
+                div.innerHTML = `
+                    <div class="song-number">${String(song.id).padStart(2, '0')}</div>
+                    <div class="song-details">
+                        <h3>${song.title}</h3>
+                        <p>${song.artist}</p>
+                    </div>
+                    <div class="song-duration">
+                        <span>${song.duration}</span>
+                        <button class="play-pause-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="delete-btn" title="Delete song">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                return div;
+            }
+
+            function renderPlaylist() {
+                playlist.innerHTML = '';
+                songs.forEach(song => {
+                    const songElement = createSongElement(song);
+                    playlist.appendChild(songElement);
+                });
+            }
 
             function resetPlayButtons() {
                 document.querySelectorAll('.play-pause-btn i').forEach(icon => {
                     icon.className = 'fas fa-play';
                 });
-                songs.forEach(song => song.classList.remove('playing'));
+                document.querySelectorAll('.song').forEach(song => song.classList.remove('playing'));
             }
 
-            function playSong(song) {
-                const audioSrc = song.dataset.audioSrc;
-                if (!audioSrc) return; // Ensure the song has a valid source
+            function playSong(songElement) {
+                const songId = parseInt(songElement.dataset.id);
+                const song = songs.find(s => s.id === songId);
 
-                // Stop the background music when a song is clicked
-                backgroundAudio.pause();
+                if (!song) return;
 
-                if (currentlyPlaying === song) {
-                    stopSong();
+                if (currentlyPlaying === songId) {
+                    if (isPlaying) {
+                        audioPlayer.pause();
+                        isPlaying = false;
+                        songElement.querySelector('.play-pause-btn i').className = 'fas fa-play';
+                    } else {
+                        audioPlayer.play();
+                        isPlaying = true;
+                        songElement.querySelector('.play-pause-btn i').className = 'fas fa-pause';
+                    }
+                } else {
+                    resetPlayButtons();
+                    audioPlayer.src = song.audioSrc;
+                    audioPlayer.play();
+                    currentlyPlaying = songId;
+                    isPlaying = true;
+                    songElement.querySelector('.play-pause-btn i').className = 'fas fa-pause';
+                    songElement.classList.add('playing');
+                }
+            }
+
+            function deleteSong(songId) {
+                if (currentlyPlaying === songId) {
+                    audioPlayer.pause();
+                    currentlyPlaying = null;
+                    isPlaying = false;
+                }
+                songs = songs.filter(song => song.id !== songId);
+                saveSongs();
+                renderPlaylist();
+            }
+
+            function formatDuration(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            async function handleFileUpload(e) {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const url = URL.createObjectURL(file);
+
+                // Create temporary audio element to get duration
+                const audio = new Audio(url);
+                await new Promise(resolve => {
+                    audio.addEventListener('loadedmetadata', resolve);
+                });
+
+                const newSong = {
+                    id: Math.max(...songs.map(s => s.id), 0) + 1,
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    artist: "Custom Upload",
+                    duration: formatDuration(audio.duration),
+                    audioSrc: url
+                };
+
+                songs.push(newSong);
+                saveSongs();
+                renderPlaylist();
+            }
+
+            function handleClick(e) {
+                const songElement = e.target.closest('.song');
+                if (!songElement) return;
+
+                if (e.target.closest('.delete-btn')) {
+                    const songId = parseInt(songElement.dataset.id);
+                    deleteSong(songId);
                     return;
                 }
 
-                audioPlayer.src = audioSrc;
-                audioPlayer.play();
-                resetPlayButtons();
-
-                const icon = song.querySelector('.play-pause-btn i');
-                icon.className = 'fas fa-pause';
-                song.classList.add('playing');
-                currentlyPlaying = song;
+                if (e.target.closest('.play-pause-btn') || !e.target.closest('button')) {
+                    playSong(songElement);
+                }
             }
 
-            function stopSong() {
-                audioPlayer.pause();
-                audioPlayer.currentTime = 0;
-                resetPlayButtons();
+            // Event Listeners
+            playlist.addEventListener('click', handleClick);
+            addSongBtn.addEventListener('click', () => fileInput.click()); // Trigger file input on button click
+            fileInput.addEventListener('change', handleFileUpload);
+            audioPlayer.addEventListener('ended', () => {
+                isPlaying = false;
                 currentlyPlaying = null;
-            }
-
-            songs.forEach(song => {
-                const playPauseBtn = song.querySelector('.play-pause-btn');
-
-                playPauseBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    playSong(song);
-                });
-
-                song.addEventListener('click', () => {
-                    playSong(song);
-                });
+                resetPlayButtons();
             });
 
-            audioPlayer.addEventListener('ended', stopSong);
-            document.getElementById("yes").addEventListener("click", goToMusicPage);
-
-            function goToMusicPage() {
-                window.location.href = 'https://llrraa17.github.io/14feb//too.html';
-            }
+            // Initial render
+            renderPlaylist();
         });
-        </script>
-        </body>
-        </html>
+        // In your JavaScript (add this after your existing DOMContentLoaded event listener):
+
+// Image handling
+const changeImageBtn = document.getElementById('changeImageBtn');
+const imageInput = document.getElementById('imageInput');
+const displayedImage = document.getElementById('displayedImage');
+
+// Load saved image if exists
+const savedImage = localStorage.getItem('savedImage');
+if (savedImage) {
+    displayedImage.src = savedImage;
+}
+
+// Handle image change
+changeImageBtn.addEventListener('click', () => imageInput.click());
+
+imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        displayedImage.src = event.target.result;
+        // Save to localStorage
+        localStorage.setItem('savedImage', event.target.result);
+    };
+    reader.readAsDataURL(file);
+});
+    </script>
+
+
+    <!-- Love Notes Script -->
+    <script>
+       // Love Notes functionality
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Update button states
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Update content visibility
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(button.dataset.tab).classList.add('active');
+
+        // Clear error message
+        document.getElementById('error').textContent = '';
+    });
+});
+
+function saveNote() {
+    const content = document.getElementById('noteContent').value;
+    const passcode = document.getElementById('writePasscode').value;
+    const errorElement = document.getElementById('error');
+
+    if (!content.trim() || !passcode.trim()) {
+        errorElement.textContent = 'Please write a note and set a passcode ❤️';
+        errorElement.className = 'error success';
+        return;
+    }
+
+    const note = {
+        id: Date.now().toString(), // Add unique ID
+        content: content,
+        timestamp: new Date().toLocaleString(),
+        passcode: passcode
+    };
+
+    // Get existing notes or initialize empty array
+    let notes = JSON.parse(localStorage.getItem('loveNotes') || '[]');
+    notes.push(note);
+    localStorage.setItem('loveNotes', JSON.stringify(notes));
+
+    // Clear inputs and show success message
+    document.getElementById('noteContent').value = '';
+    document.getElementById('writePasscode').value = '';
+    errorElement.textContent = `Your note has been saved with passcode: ${passcode} ❤️`;
+    errorElement.className = 'error success';
+}
+function deleteNote(noteId) {
+    let notes = JSON.parse(localStorage.getItem('loveNotes') || []);
+    notes = notes.filter(note => note.id !== noteId);
+    localStorage.setItem('loveNotes', JSON.stringify(notes));
+    
+    // Refresh the displayed notes
+    const currentPasscode = document.getElementById('readPasscode').value;
+    retrieveNotes();
+}
+
+function retrieveNotes() {
+    const passcode = document.getElementById('readPasscode').value;
+    const notes = JSON.parse(localStorage.getItem('loveNotes') || []);
+    const errorElement = document.getElementById('error');
+    const noteDisplay = document.getElementById('noteDisplay');
+
+    // Find all notes with matching passcode
+    const matchingNotes = notes.filter(note => note.passcode === passcode);
+
+    if (matchingNotes.length > 0) {
+        noteDisplay.innerHTML = matchingNotes.map(note => `
+            <div class="note">
+                <div class="note-timestamp">Written on: ${note.timestamp}</div>
+                <div class="note-content">${note.content}</div>
+                <button class="delete-button" onclick="deleteNote('${note.id}')">🗑️</button>
+            </div>
+        `).join('');
+        errorElement.textContent = '';
+    } else {
+        noteDisplay.innerHTML = '';
+        errorElement.textContent = 'No notes found with this passcode 💔';
+        errorElement.className = 'error failure';
+    }
+}
+</script>
+</body>
+</html>
