@@ -497,6 +497,18 @@
 }
     </style>
 </head>
+    <script>
+  // Check for changes every 10 seconds
+  setInterval(function() {
+    fetch(window.location.href + '?check=' + new Date().getTime())
+      .then(response => response.text())
+      .then(html => {
+        if (html !== document.documentElement.outerHTML) {
+          location.reload();
+        }
+      });
+  }, 10000); // Check every 10 seconds
+</script>
 <body>
     <canvas id="heart"></canvas>
 
