@@ -497,17 +497,29 @@
 }
     </style>
 </head>
-    <script>
-  // Check for changes every 10 seconds
-  setInterval(function() {
-    fetch(window.location.href + '?check=' + new Date().getTime())
-      .then(response => response.text())
-      .then(html => {
-        if (html !== document.documentElement.outerHTML) {
-          location.reload();
-        }
-      });
-  }, 10000); // Check every 10 seconds
+   <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC63ANAdLMku4OtrmajUVdRA_3a7sztZHs",
+    authDomain: "musicnotesapp-2d34c.firebaseapp.com",
+    databaseURL: "https://musicnotesapp-2d34c-default-rtdb.firebaseio.com",
+    projectId: "musicnotesapp-2d34c",
+    storageBucket: "musicnotesapp-2d34c.firebasestorage.app",
+    messagingSenderId: "260875388132",
+    appId: "1:260875388132:web:7499187850a35bf0a818f1",
+    measurementId: "G-9JXL53K342"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </script>
 <body>
     <canvas id="heart"></canvas>
