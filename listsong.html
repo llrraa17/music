@@ -347,49 +347,7 @@
     </style>
 </head>
 <body>
-    <script>
-    import { createClient } from '@supabase/supabase-js'
-
-const SUPABASE_URL = "https://zierrrjbjoolexisscwe.supabase.co"
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppZXJycmpiam9vbGV4aXNzY3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMyODAwNjAsImV4cCI6MjA1ODg1NjA2MH0.LMgvE1VgxwhJxn7KD97d_nm8ffVkOQas_mB_lCUi93I"
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-
-// Test connection
-async function getData() {
-    let { data, error } = await supabase.from('lina').select('*')
-    console.log(data, error)
-}
-
-getData()
-async function uploadMedia(songFile, imageFile, note) {
-    try {
-        // Upload Song
-        const songPath = `songs/${Date.now()}-${songFile.name}`
-        const { data: songData, error: songError } = await supabase.storage.from('ranim').upload(songPath, songFile)
-        if (songError) throw songError
-        const songUrl = `${SUPABASE_URL}/storage/v1/object/public/ranim/${songPath}`
-
-        // Upload Image
-        const imagePath = `images/${Date.now()}-${imageFile.name}`
-        const { data: imageData, error: imageError } = await supabase.storage.from('ranim').upload(imagePath, imageFile)
-        if (imageError) throw imageError
-        const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/ranim/${imagePath}`
-
-        // Store URLs in Supabase Database
-        const { data, error } = await supabase
-            .from('media_files')
-            .insert([{ song_url: songUrl, image_url: imageUrl, note: note }])
-        if (error) throw error
-
-        console.log("Media uploaded successfully:", data)
-        return data
-    } catch (error) {
-        console.error("Upload failed:", error.message)
-    }
-}
-
-      </script>
+   
     <div class="container">
         <h1>Love Memory Game</h1>
         
